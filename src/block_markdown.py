@@ -87,7 +87,7 @@ def markdown_to_html_node(markdown):
             stripped_markdown = block.strip("```")
             text_nodes = text_to_textnodes(stripped_markdown)
             html_nodes = list(map(text_node_to_html_node, text_nodes))
-            children.append(ParentNode("pre", ParentNode("code", html_nodes)))
+            children.append(ParentNode("pre", [ParentNode("code", html_nodes)]))
         if block_type == block_type_quote:
             replaced_markdown = block.replace("\n", " ").replace("> ", "")
             text_nodes = text_to_textnodes(replaced_markdown)
@@ -106,19 +106,21 @@ def markdown_to_html_node(markdown):
     html_node = ParentNode("div", children)
     return html_node
 
+def extract_title(markdown):
+    split_markdown = markdown.split("\n")
+    for line in split_markdown:
+        if line.startswith("# "):
+            return line.split("# ", 1)[1]
+    raise Exception("No h1 header found!")
+
 if __name__ == "__main__":
-        md = """
-* This is a list
-* with items
-* and *more* items
-
-1. This is an `ordered` list
-2. with items
-3. and more items
-
-"""
+        md = """```
+func main(){
+    fmt.Println("Hello, World!")
+}
+```"""
 
         node = markdown_to_html_node(md)
         html = node.to_html()
         print(html)
-        print("<div><ul><li>This is a list</li><li>with items</li><li>and <i>more</i> items</li></ul><ol><li>This is an <code>ordered</code> list</li><li>with items</li><li>and more items</li></ol></div>")
+        # print("<div><ul><li>This is a list</li><li>with items</li><li>and <i>more</i> items</li></ul><ol><li>This is an <code>ordered</code> list</li><li>with items</li><li>and more items</li></ol></div>")

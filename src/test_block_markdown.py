@@ -4,6 +4,7 @@ from block_markdown import (
     markdown_to_blocks,
     block_to_block_type,
     markdown_to_html_node,
+    extract_title,
     block_type_paragraph,
     block_type_heading,
     block_type_code,
@@ -268,6 +269,27 @@ this is paragraph text
             html,
             "<div><blockquote>This is a blockquote block</blockquote><p>this is paragraph text</p></div>",
         )
+
+    def test_extract_title(self):
+        md = """
+# This has a title
+
+blah 
+"""
+        self.assertEqual(
+            extract_title(md),
+            "This has a title"
+        )
+
+    def test_extract_no_title(self):
+        md = """
+## This has a title
+
+### no title in here! 
+"""
+        with self.assertRaises(Exception) as e:
+            extract_title(md)
+        self.assertEqual(str(e.exception), "No h1 header found!")
 
 if __name__ == "__main__":
     unittest.main()
